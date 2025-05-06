@@ -1,0 +1,140 @@
+body {
+  text-align: center;
+  margin: 20px;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+form {
+  margin-bottom: 20px;
+  border: 2px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+label {
+  display: inline-block;
+  width: 150px;
+  text-align: left;
+}
+
+input {
+  padding: 5px;
+  margin-right: 10px;
+}
+
+button {
+  padding: 5px 10px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.error {
+  color: red;
+  font-size: 0.9em;
+  margin-left: 10px;
+  align-self: center;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 2px solid #ddd;
+}
+
+table,
+th,
+td {
+  border: 1px solid #ddd;
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: center;
+  vertical-align: middle;
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
+}
+
+th {
+  background-color: #a59ce8;
+}
+
+td:nth-child(4) {
+  width: 400px;
+  min-width: 400px;
+  max-width: 400px;
+}
+
+table tr:nth-child(odd) {
+  background-color: #e5e5e5;
+}
+
+table tr:nth-child(even) {
+  background-color: #b3b3b3;
+}
+
+#addNewBooksBtn,
+#deleteBooks {
+  margin-top: 20px;
+  display: inline-block;
+  width: auto;
+  text-align: right;
+}
+
+.buttons-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.buttons-container button {
+  margin-right: 10px;
+}
+
+table td input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+table td input[type="text"],
+table td input[type="number"],
+table td input[type="email"] {
+  padding: 5px;
+  margin: 0;
+}
+
+form div {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+form div label {
+  width: 150px;
+}
+
+form div input {
+  width: 200px;
+}
+
+form div .error {
+  flex-grow: 1;
+}
+
+#bookForm h2 {
+  text-align: left;
+  width: 100%;
+}
+
+#bookForm div button {
+  margin-right: 10px;
+}

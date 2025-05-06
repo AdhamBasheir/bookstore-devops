@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Library Project</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="container">
+    <!-- Form for entering the number of books -->
+    <form id="booksNumberForm">
+      <div>
+        <label for="booksNumber">The number of Books:</label>
+        <input type="number" min="1" id="booksNumber" name="booksNumber" required>
+        <button type="button" id="numBtn" name="numBtn">OK</button>
+        <button type="button" id="numBtnCancel" name="numBtnCancel">Cancel</button><br><br>
+        <span class="error" id="booksNumberError"></span>
+      </div>
+    </form>
+
+    <!-- Form for entering book and author details -->
+    <form id="bookForm" style="display: none;">
+      <div>
+        <h2>Book</h2>
+      </div>
+      <div>
+        <label for="bookName">Name:</label>
+        <input type="text" id="bookName" name="bookName" required>
+        <span class="error" id="bookErrorForm"></span><br><br>
+      </div>
+      <div>
+        <label for="price">Price:</label>
+        <input type="number" min="0" id="price" name="price" step="0.01" required>
+        <span class="error" id="priceErrorForm"></span><br><br>
+      </div>
+      <div>
+        <h2>Author</h2>
+      </div>
+      <div>
+        <label for="authorName">Name:</label>
+        <input type="text" id="authorName" name="authorName" required>
+        <span class="error" id="nameErrorForm"></span><br><br>
+      </div>
+      <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <span class="error" id="emailErrorForm"></span><br><br><br><br>
+      </div>
+      <div class="buttons">
+        <button type="button" id="addBtn" name="addBtn">Add</button>
+        <button type="reset" id="rstBtn" name="rstBtn">Reset</button>
+        <button type="button" id="endBtn" name="endBtn">End</button>
+        <button type="button" id="abortBtn" name="abortBtn">Abort</button>
+      </div>
+    </form>
+
+    <!-- Table to display books -->
+    <table id="booksTable" style="display: none;">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Author Name</th>
+          <th class="email">Author Email</th>
+          <th colspan="2">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Rows will be added dynamically here -->
+      </tbody>
+    </table>
+
+    <div class="buttons-container" style="display: none;">
+      <button id="addNewBooksBtn">Add New Books</button>
+      <button id="deleteBooks">Delete Books</button>
+    </div>
+
+  </div>
+  <script src="script.js"></script>
+</body>
+
+</html>
