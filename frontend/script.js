@@ -101,6 +101,7 @@ function addBookForm() {
 function endBookForm() {
   booksData.push(...newBooks);
   formToTable();
+  submitBooksToBackend();
 }
 
 function abortBookForm() {
@@ -340,3 +341,24 @@ function resetErrorsTable(bookID) {
   document.getElementById(`emailErrorTable${bookID}`).textContent = "";
 }
 
+// backend submission
+async function submitBooksToBackend() {
+  try {
+    const response = await fetch('http://localhost:3000/api/books', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(booksData),
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      alert('✅ Books submitted successfully to backend!');
+      console.log(result);
+    } else {
+      alert('❌ Backend error: ' + result.error);
+    }
+  } catch (error) {
+    console.error('❌ Network or server error:', error);
+    alert('Failed to submit books to backend.');
+  }
+}
