@@ -13,10 +13,11 @@ const addNewBooksBtn = document.getElementById("addNewBooksBtn");
 const deleteBooksBtn = document.getElementById("deleteBooks");
 const tbody = booksTable.querySelector("tbody");
 
-let addBooksCount = 0;
-let booksData = [];
+let addBooksCount;
+let booksData;
 let newBooks = [];
-let nextID = 0;
+let nextID;
+let reload;
 
 
 // classes
@@ -28,9 +29,9 @@ class Author {
 }
 
 class Book {
-  constructor(_id, name, quantity, author) {
-    this.id = generateID();
-    this._id = _id; 
+  constructor(frontID, _id, name, quantity, author) {
+    this.frontID = frontID || generateID();
+    this._id = _id;
     this.name = name;
     this.quantity = quantity;
     this.author = author;
@@ -47,7 +48,11 @@ document.getElementById("endBtn").addEventListener("click", endBookForm);
 document.getElementById("abortBtn").addEventListener("click", abortBookForm);
 addNewBooksBtn.addEventListener("click", addBookTable);
 deleteBooksBtn.addEventListener("click", deleteBooksTable);
-fetchBooksFromBackend();
+
+// fetch data from the backend and adjust `nextID`
+(async function () {
+  await fetchBooksFromBackend();
+})();
 
 
 // form handlers
@@ -88,7 +93,7 @@ function addBookForm() {
 
   if (isValid) {
     const author = new Author(authorName, email);
-    const book = new Book(null, bookName, quantity, author);
+    const book = new Book(null, null, bookName, quantity, author);
 
     newBooks.push(book);
     bookForm.reset();
@@ -100,8 +105,8 @@ function addBookForm() {
   }
 }
 
-function endBookForm() {
-  submitBooksToBackend();
+async function endBookForm() {
+  await submitBooksToBackend();
   newBooks = [];
   formToTable();
 }
@@ -140,18 +145,18 @@ function addBookTable() {
   booksNumberForm.style.display = "block";
 }
 
-function deleteBooksTable() {
+async function deleteBooksTable() {
   if (confirm("Are you sure you want to delete all the books?")) {
-    booksData = [];
     tbody.innerHTML = "";
     booksTable.style.display = "none";
     deleteBooksBtn.style.display = "none";
+    await deleteAllBooksFromBackend();
   }
 }
 
 function editBook(event) {
   const bookID = findBookID(event.target.id);
-  const book = booksData.find(b => b.id === bookID);
+  const book = booksData.find(b => b.frontID === bookID);
   const row = event.target.closest("tr");
 
   row.innerHTML = `
@@ -182,22 +187,24 @@ function editBook(event) {
   confirmCancelBtns(row);
 }
 
-function deleteBook(event) {
+async function deleteBook(event) {
   const bookID = findBookID(event.target.id);
+  const book = booksData.find(b => b.frontID === bookID);
+  const bookBackendID = book._id;
   const row = event.target.closest("tr");
 
   if (confirm("Are you sure you want to delete this book?")) {
     row.remove();
-    booksData = booksData.filter(book => book.id !== bookID);
-
-    if (booksData.length === 0) {
+    if (booksData.length === 1) {
       booksTable.style.display = "none";
       deleteBooksBtn.style.display = "none";
     }
+
+    await deleteBookFromBackend(bookBackendID);
   }
 }
 
-function confirmBtnFn(event) {
+async function confirmBtnFn(event) {
   const bookID = findBookID(event.target.id);
   const row = event.target.closest("tr");
 
@@ -207,17 +214,29 @@ function confirmBtnFn(event) {
   const email = row.querySelector(".editEmail").value.trim();
 
   if (validateBookTable(bookName, quantity, authorName, email, bookID)) {
-    const book = booksData.find(b => b.id === bookID);
+    const book = booksData.find(b => b.frontID === bookID);
+
+    if (book.author.name !== authorName || book.author.email !== email) reload = true;
+
     book.name = bookName;
     book.quantity = quantity;
     book.author.name = authorName;
     book.author.email = email;
 
-    const index = booksData.findIndex(b => b.id === book.id);
+    const index = booksData.findIndex(b => b.frontID === book.frontID);
     booksData[index] = book;
 
     row.innerHTML = createTableRow(book).innerHTML;
     editDeleteBtns(row);
+
+    const updatedBookData = new Book(book.frontID, book._id, book.name, book.quantity, book.author);
+    await updateBookInBackend(updatedBookData);
+
+    if (reload) {
+      await fetchBooksFromBackend();
+      reload = false;
+      showTable();
+    }
   }
 }
 
@@ -225,7 +244,7 @@ function cancelBtnFn(event) {
   const bookID = findBookID(event.target.id);
   const row = event.target.closest("tr");
 
-  const book = booksData.find(b => b.id === bookID);
+  const book = booksData.find(b => b.frontID === bookID);
   row.innerHTML = createTableRow(book).innerHTML;
   editDeleteBtns(row);
 }
@@ -233,7 +252,7 @@ function cancelBtnFn(event) {
 
 // helper functions
 function generateID() {
-  return nextID++;
+  return ++nextID;
 }
 
 function findBookID(key) {
@@ -247,8 +266,8 @@ function createTableRow(book) {
     <td>${book.quantity.toFixed(2)}</td>
     <td>${book.author.name}</td>
     <td>${book.author.email}</td>
-    <td><button class="editBtn" id="edit${book.id}">Edit</button></td>
-    <td><button class="deleteBtn" id="delete${book.id}">Delete</button></td>
+    <td><button class="editBtn" id="edit${book.frontID}">Edit</button></td>
+    <td><button class="deleteBtn" id="delete${book.frontID}">Delete</button></td>
   `;
 
   editDeleteBtns(row);
@@ -343,6 +362,27 @@ function resetErrorsTable(bookID) {
 }
 
 // backend functions
+async function fetchBooksFromBackend() {
+  try {
+    const response = await fetch('http://localhost:3000/api/books');
+    const booksFromDB = await response.json();
+
+    booksData = booksFromDB.map(b => {
+      const author = new Author(b.author.name, b.author.email);
+      return new Book(b.frontID, b._id, b.name, b.quantity, author);
+    });
+
+    if (booksData.length > 0) {
+      nextID = Math.max(...booksData.map(book => book.frontID));
+    } else {
+      nextID = 0;
+    }
+  } catch (err) {
+    console.error('❌ Failed to load books from backend:', err);
+    alert('Could not load books from server.');
+  }
+}
+
 async function submitBooksToBackend() {
   try {
     const response = await fetch('http://localhost:3000/api/books', {
@@ -353,8 +393,7 @@ async function submitBooksToBackend() {
 
     const result = await response.json();
     if (response.ok) {
-      alert('✅ Books submitted successfully to backend!');
-      fetchBooksFromBackend();
+      await fetchBooksFromBackend();
       console.log(result);
     } else {
       alert('❌ Backend error: ' + result.error);
@@ -365,18 +404,61 @@ async function submitBooksToBackend() {
   }
 }
 
-async function fetchBooksFromBackend() {
+async function updateBookInBackend(updatedBookData) {
   try {
-    const response = await fetch('http://localhost:3000/api/books');
-    const booksFromDB = await response.json();
-
-    booksData = booksFromDB.map(b => {
-      const author = new Author(b.author.name, b.author.email);
-      return new Book(b._id, b.name, b.quantity, author);
+    const response = await fetch(`http://localhost:3000/api/books/${updatedBookData._id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updatedBookData)
     });
-    booksData.sort((a, b) => a.name.localeCompare(b.name));
-  } catch (err) {
-    console.error('❌ Failed to load books from backend:', err);
-    alert('Could not load books from server.');
+
+    const result = await response.json();
+    if (response.ok) {
+      await fetchBooksFromBackend();
+    } else {
+      alert('❌ Error updating book: ' + result.error);
+    }
+  } catch (error) {
+    console.error('❌ Network error:', error);
+    alert('❌ Failed to update book.');
+  }
+}
+
+async function deleteBookFromBackend(bookBackendID) {
+  try {
+    const response = await fetch(`http://localhost:3000/api/books/${bookBackendID}`, {
+      method: 'DELETE',
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      await fetchBooksFromBackend();
+    } else {
+      alert('❌ Error deleting book: ' + result.error);
+    }
+  } catch (error) {
+    console.error('❌ Network error:', error);
+    alert('❌ Failed to delete book.');
+  }
+}
+
+async function deleteAllBooksFromBackend() {
+  try {
+    const response = await fetch('http://localhost:3000/api/books', {
+      method: 'DELETE',
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      alert('✅ All books deleted successfully!');
+      booksData = [];
+    } else {
+      alert('❌ Error deleting all books: ' + result.error);
+    }
+  } catch (error) {
+    console.error('❌ Network error:', error);
+    alert('❌ Failed to delete all books.');
   }
 }
