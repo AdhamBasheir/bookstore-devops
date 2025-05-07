@@ -28,8 +28,9 @@ class Author {
 }
 
 class Book {
-  constructor(name, quantity, author) {
+  constructor(_id, name, quantity, author) {
     this.id = generateID();
+    this._id = _id; 
     this.name = name;
     this.quantity = quantity;
     this.author = author;
@@ -87,7 +88,7 @@ function addBookForm() {
 
   if (isValid) {
     const author = new Author(authorName, email);
-    const book = new Book(bookName, quantity, author);
+    const book = new Book(null, bookName, quantity, author);
 
     newBooks.push(book);
     bookForm.reset();
@@ -371,7 +372,7 @@ async function fetchBooksFromBackend() {
 
     booksData = booksFromDB.map(b => {
       const author = new Author(b.author.name, b.author.email);
-      return new Book(b.name, b.quantity, author);
+      return new Book(b._id, b.name, b.quantity, author);
     });
     booksData.sort((a, b) => a.name.localeCompare(b.name));
   } catch (err) {

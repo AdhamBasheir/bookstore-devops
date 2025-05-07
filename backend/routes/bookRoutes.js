@@ -22,33 +22,53 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const books = req.body;
+    const errors = [];
+    let addedCount = 0;
 
     if (!Array.isArray(books) || books.length === 0) {
       return res.status(400).json({ error: 'No books to add' });
-    }    
-
-    for (let bookData of books) {
-      const { name, quantity, author } = bookData;
-
-      if (!name || !author.name || !author.email) {
-        return res.status(400).json({ error: 'Missing required fields' });
-      }
-
-      let currAuthor = await Author.findOne({ email: author.email });
-      if (!currAuthor) {
-        currAuthor = new Author({ name: author.name, email: author.email });
-        await currAuthor.save();
-      }
-
-      const newBook = new Book({
-        name,
-        quantity,
-        author: currAuthor._id,
-      });
-      await newBook.save();
     }
 
-    res.status(201).json({ message: 'Books added successfully' });
+    for (let i = 0; i < books.length; i++) {
+      const { name, quantity, author } = books[i];
+
+      if (!name || !quantity || !author?.name || !author?.email) {
+        errors.push(`Book at index ${i} is missing required fields.`);
+        continue;
+      }
+
+      try {
+        let currAuthor = await Author.findOne({ email: author.email });
+
+        if (currAuthor && currAuthor.name !== author.name) {
+          errors.push(
+            `Author name mismatch for email ${author.email} (got "${author.name}", expected "${currAuthor.name}")`
+          );
+          continue;
+        }
+
+        if (!currAuthor) {
+          currAuthor = new Author({ name: author.name, email: author.email });
+          await currAuthor.save();
+        }
+
+        const newBook = new Book({
+          name,
+          quantity,
+          author: currAuthor._id,
+        });
+
+        await newBook.save();
+        addedCount++;
+      } catch (innerErr) {
+        errors.push(`Error adding book at index ${i}: ${innerErr.message}`);
+      }
+    }
+
+    res.status(207).json({
+      message: `${addedCount} book(s) added successfully.`,
+      errors: errors.length ? errors : undefined,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
