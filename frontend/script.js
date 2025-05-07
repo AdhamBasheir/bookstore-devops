@@ -28,10 +28,10 @@ class Author {
 }
 
 class Book {
-  constructor(name, price, author) {
+  constructor(name, quantity, author) {
     this.id = generateID();
     this.name = name;
-    this.price = price;
+    this.quantity = quantity;
     this.author = author;
   }
 }
@@ -77,16 +77,16 @@ function numberBookCancel() {
 
 function addBookForm() {
   const bookName = document.getElementById("bookName").value.trim();
-  const price = parseFloat(document.getElementById("price").value);
+  const quantity = parseFloat(document.getElementById("quantity").value);
   const authorName = document.getElementById("authorName").value.trim();
   const email = document.getElementById("email").value.trim();
 
   resetErrorsForm();
-  let isValid = validateBookForm(bookName, price, authorName, email);
+  let isValid = validateBookForm(bookName, quantity, authorName, email);
 
   if (isValid) {
     const author = new Author(authorName, email);
-    const book = new Book(bookName, price, author);
+    const book = new Book(bookName, quantity, author);
 
     newBooks.push(book);
     bookForm.reset();
@@ -158,8 +158,8 @@ function editBook(event) {
       <span class="error" id="bookErrorTable${bookID}"></span>
     </td>
     <td>
-      <input type="number" value="${book.price.toFixed(2)}" class="editPrice" step="0.01">
-      <span class="error" id="priceErrorTable${bookID}"></span>
+      <input type="number" value="${book.quantity.toFixed(2)}" class="editquantity" step="0.01">
+      <span class="error" id="quantityErrorTable${bookID}"></span>
     </td>
     <td>
       <input type="text" value="${book.author.name}" class="editAuthorName">
@@ -200,14 +200,14 @@ function confirmBtnFn(event) {
   const row = event.target.closest("tr");
 
   const bookName = row.querySelector(".editBookName").value.trim();
-  const price = parseFloat(row.querySelector(".editPrice").value);
+  const quantity = parseFloat(row.querySelector(".editquantity").value);
   const authorName = row.querySelector(".editAuthorName").value.trim();
   const email = row.querySelector(".editEmail").value.trim();
 
-  if (validateBookTable(bookName, price, authorName, email, bookID)) {
+  if (validateBookTable(bookName, quantity, authorName, email, bookID)) {
     const book = booksData.find(b => b.id === bookID);
     book.name = bookName;
-    book.price = price;
+    book.quantity = quantity;
     book.author.name = authorName;
     book.author.email = email;
 
@@ -242,7 +242,7 @@ function createTableRow(book) {
   const row = document.createElement("tr");
   row.innerHTML = `
     <td>${book.name}</td>
-    <td>${book.price.toFixed(2)}</td>
+    <td>${book.quantity.toFixed(2)}</td>
     <td>${book.author.name}</td>
     <td>${book.author.email}</td>
     <td><button class="editBtn" id="edit${book.id}">Edit</button></td>
@@ -273,7 +273,7 @@ function isPositiveInteger(value) {
   return !isNaN(value) && value > 0 && value % 1 === 0;
 }
 
-function validateBookForm(bookName, price, authorName, email) {
+function validateBookForm(bookName, quantity, authorName, email) {
   let isValid = true;
 
   if (bookName === "") {
@@ -281,8 +281,8 @@ function validateBookForm(bookName, price, authorName, email) {
     isValid = false;
   }
 
-  if (isNaN(price) || price <= 0 || !/^\d+(\.\d{1,2})?$/.test(price)) {
-    document.getElementById("priceErrorForm").textContent = "Price must be a positive number with up to 2 decimal places.";
+  if (isNaN(quantity) || quantity <= 0 || !/^\d+(\.\d{1,2})?$/.test(quantity)) {
+    document.getElementById("quantityErrorForm").textContent = "quantity must be a positive number with up to 2 decimal places.";
     isValid = false;
   }
 
@@ -299,7 +299,7 @@ function validateBookForm(bookName, price, authorName, email) {
   return isValid;
 }
 
-function validateBookTable(bookName, price, authorName, email, bookID) {
+function validateBookTable(bookName, quantity, authorName, email, bookID) {
   let isValid = true;
   resetErrorsTable(bookID);
 
@@ -308,8 +308,8 @@ function validateBookTable(bookName, price, authorName, email, bookID) {
     isValid = false;
   }
 
-  if (isNaN(price) || price <= 0 || !/^\d+(\.\d{1,2})?$/.test(price)) {
-    document.getElementById(`priceErrorTable${bookID}`).textContent = "Price must be a positive number with up to 2 decimal places.";
+  if (isNaN(quantity) || quantity <= 0 || !/^\d+(\.\d{1,2})?$/.test(quantity)) {
+    document.getElementById(`quantityErrorTable${bookID}`).textContent = "quantity must be a positive number with up to 2 decimal places.";
     isValid = false;
   }
 
@@ -328,14 +328,14 @@ function validateBookTable(bookName, price, authorName, email, bookID) {
 
 function resetErrorsForm() {
   document.getElementById("bookErrorForm").textContent = "";
-  document.getElementById("priceErrorForm").textContent = "";
+  document.getElementById("quantityErrorForm").textContent = "";
   document.getElementById("nameErrorForm").textContent = "";
   document.getElementById("emailErrorForm").textContent = "";
 }
 
 function resetErrorsTable(bookID) {
   document.getElementById(`bookErrorTable${bookID}`).textContent = "";
-  document.getElementById(`priceErrorTable${bookID}`).textContent = "";
+  document.getElementById(`quantityErrorTable${bookID}`).textContent = "";
   document.getElementById(`nameErrorTable${bookID}`).textContent = "";
   document.getElementById(`emailErrorTable${bookID}`).textContent = "";
 }

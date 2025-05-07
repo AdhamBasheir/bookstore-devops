@@ -32,9 +32,9 @@
         <span class="error" id="bookErrorForm"></span><br><br>
       </div>
       <div>
-        <label for="price">Price:</label>
-        <input type="number" min="0" id="price" name="price" step="0.01" required>
-        <span class="error" id="priceErrorForm"></span><br><br>
+        <label for="quantity">Quantity:</label>
+        <input type="number" min="1" id="quantity" name="quantity" step="1" required>
+        <span class="error" id="quantityErrorForm"></span><br><br>
       </div>
       <div>
         <h2>Author</h2>
@@ -62,7 +62,7 @@
       <thead>
         <tr>
           <th>Name</th>
-          <th>Price</th>
+          <th>quantity</th>
           <th>Author Name</th>
           <th class="email">Author Email</th>
           <th colspan="2">Actions</th>
