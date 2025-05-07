@@ -46,6 +46,7 @@ document.getElementById("endBtn").addEventListener("click", endBookForm);
 document.getElementById("abortBtn").addEventListener("click", abortBookForm);
 addNewBooksBtn.addEventListener("click", addBookTable);
 deleteBooksBtn.addEventListener("click", deleteBooksTable);
+fetchBooksFromBackend();
 
 
 // form handlers
@@ -99,9 +100,9 @@ function addBookForm() {
 }
 
 function endBookForm() {
-  booksData.push(...newBooks);
-  formToTable();
   submitBooksToBackend();
+  newBooks = [];
+  formToTable();
 }
 
 function abortBookForm() {
@@ -112,7 +113,6 @@ function abortBookForm() {
 // Transition from Book Form to Book Table
 function formToTable() {
   bookForm.reset();
-  newBooks = [];
   bookForm.style.display = "none";
   showTable();
 }
@@ -341,18 +341,19 @@ function resetErrorsTable(bookID) {
   document.getElementById(`emailErrorTable${bookID}`).textContent = "";
 }
 
-// backend submission
+// backend functions
 async function submitBooksToBackend() {
   try {
     const response = await fetch('http://localhost:3000/api/books', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(booksData),
+      body: JSON.stringify(newBooks),
     });
 
     const result = await response.json();
     if (response.ok) {
       alert('✅ Books submitted successfully to backend!');
+      fetchBooksFromBackend();
       console.log(result);
     } else {
       alert('❌ Backend error: ' + result.error);
@@ -360,5 +361,21 @@ async function submitBooksToBackend() {
   } catch (error) {
     console.error('❌ Network or server error:', error);
     alert('Failed to submit books to backend.');
+  }
+}
+
+async function fetchBooksFromBackend() {
+  try {
+    const response = await fetch('http://localhost:3000/api/books');
+    const booksFromDB = await response.json();
+
+    booksData = booksFromDB.map(b => {
+      const author = new Author(b.author.name, b.author.email);
+      return new Book(b.name, b.quantity, author);
+    });
+    booksData.sort((a, b) => a.name.localeCompare(b.name));
+  } catch (err) {
+    console.error('❌ Failed to load books from backend:', err);
+    alert('Could not load books from server.');
   }
 }

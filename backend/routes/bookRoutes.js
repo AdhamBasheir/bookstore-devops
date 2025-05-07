@@ -6,10 +6,26 @@ const Book = require('../models/Book.js');
 const router = express.Router();
 router.use(express.json());
 
+// GET /api/books - Get all books with author details
+router.get('/', async (req, res) => {
+  try {
+    const books = await Book.find().populate('author');
+    res.json(books);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
 // POST /api/books - Create author (if needed) + book
-router.post('/books', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const books = req.body;
+
+    if (!Array.isArray(books) || books.length === 0) {
+      return res.status(400).json({ error: 'No books to add' });
+    }    
 
     for (let bookData of books) {
       const { name, quantity, author } = bookData;
