@@ -1,5 +1,5 @@
-// The book title can contain number like the famous books "1984" or "Fahrenheit 451"
-
+// Containerized environment
+const API_URL = 'http://localhost:3000/api';
 
 // variables
 const booksNumberForm = document.getElementById("booksNumberForm");
@@ -297,6 +297,7 @@ function isPositiveInteger(value) {
 function validateBookForm(bookName, quantity, authorName, email) {
   let isValid = true;
 
+  // The book title can contain number like the famous books "1984" or "Fahrenheit 451"
   if (bookName === "") {
     document.getElementById("bookErrorForm").textContent = "Book name is required.";
     isValid = false;
@@ -364,7 +365,7 @@ function resetErrorsTable(bookID) {
 // backend functions
 async function fetchBooksFromBackend() {
   try {
-    const response = await fetch('http://localhost:3000/api/books');
+    const response = await fetch(`${API_URL}/books`);
     const booksFromDB = await response.json();
 
     booksData = booksFromDB.map(b => {
@@ -385,7 +386,7 @@ async function fetchBooksFromBackend() {
 
 async function submitBooksToBackend() {
   try {
-    const response = await fetch('http://localhost:3000/api/books', {
+    const response = await fetch(`${API_URL}/books`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newBooks),
@@ -394,7 +395,6 @@ async function submitBooksToBackend() {
     const result = await response.json();
     if (response.ok) {
       await fetchBooksFromBackend();
-      console.log(result);
     } else {
       alert('❌ Backend error: ' + result.error);
     }
@@ -406,7 +406,7 @@ async function submitBooksToBackend() {
 
 async function updateBookInBackend(updatedBookData) {
   try {
-    const response = await fetch(`http://localhost:3000/api/books/${updatedBookData._id}`, {
+    const response = await fetch(`${API_URL}/books/${updatedBookData._id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -428,7 +428,7 @@ async function updateBookInBackend(updatedBookData) {
 
 async function deleteBookFromBackend(bookBackendID) {
   try {
-    const response = await fetch(`http://localhost:3000/api/books/${bookBackendID}`, {
+    const response = await fetch(`${API_URL}/books/${bookBackendID}`, {
       method: 'DELETE',
     });
 
@@ -446,7 +446,7 @@ async function deleteBookFromBackend(bookBackendID) {
 
 async function deleteAllBooksFromBackend() {
   try {
-    const response = await fetch('http://localhost:3000/api/books', {
+    const response = await fetch(`${API_URL}/books`, {
       method: 'DELETE',
     });
 

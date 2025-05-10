@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: library-frontend
+  namespace: library-devops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: library-frontend
+  template:
+    metadata:
+      labels:
+        app: library-frontend
+    spec:
+      containers:
+        - name: library-frontend
+          image: adhambasheir/library-devops-frontend:latest
+          ports:
+            - containerPort: 80

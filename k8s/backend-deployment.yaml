@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: library-backend
+  namespace: library-devops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: library-backend
+  template:
+    metadata:
+      labels:
+        app: library-backend
+    spec:
+      containers:
+        - name: library-backend
+          image: adhambasheir/library-devops-backend:latest
+          ports:
+            - containerPort: 3000

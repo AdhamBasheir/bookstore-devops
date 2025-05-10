@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: library-frontend-service
+  namespace: library-devops
+spec:
+  selector:
+    app: library-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP  # use LoadBalancer for external access if needed
