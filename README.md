@@ -1,0 +1,1 @@
+To run the backend, create a .env file in the root directory. You'll need to provide your own MongoDB Atlas URI.
