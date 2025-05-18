@@ -3,8 +3,8 @@ kind: Ingress
 metadata:
   name: library-ingress
   namespace: library-devops
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  # annotations:
+  #   nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   ingressClassName: nginx
   rules:
