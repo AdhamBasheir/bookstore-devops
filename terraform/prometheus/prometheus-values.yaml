@@ -1,0 +1,9 @@
+prometheus:
+  service:
+    type: LoadBalancer
+
+grafana:
+  enabled: true
+  service:
+    type: LoadBalancer
+  adminPassword: admin

@@ -17,8 +17,3 @@ variable "cluster_ca_certificate" {
   description = "EKS cluster CA certificate"
   type        = string
 }
-
-variable "cluster_token" {
-  description = "Authentication token to connect to the EKS cluster"
-  type        = string
-}
