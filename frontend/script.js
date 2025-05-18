@@ -1,5 +1,5 @@
 // Containerized environment
-const API_URL = '/api/books';
+const API_URL = '/api';
 
 // variables
 const booksNumberForm = document.getElementById("booksNumberForm");
