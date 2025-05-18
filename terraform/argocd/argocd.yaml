@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/AdhamBasheir/library-devops
     targetRevision: HEAD
-    path: k8s/manifests/
+    path: k8s/
   destination:
     server: https://kubernetes.default.svc
     namespace: library-devops
