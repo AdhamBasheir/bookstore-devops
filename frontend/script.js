@@ -1,5 +1,5 @@
 // Containerized environment
-const API_URL = 'http://library-backend-service:3000/api';
+const API_URL = '/api/books';
 
 // variables
 const booksNumberForm = document.getElementById("booksNumberForm");
