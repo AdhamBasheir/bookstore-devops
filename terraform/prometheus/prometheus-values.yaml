@@ -1,9 +1,78 @@
+# Prometheus main config
 prometheus:
   service:
     type: LoadBalancer
+    port: 9090
+  serviceAccount:
+    create: true
+  retention: "7d"
 
+  # # Persistent volume (optional but recommended)
+  # prometheusSpec:
+  #   storageSpec:
+  #     volumeClaimTemplate:
+  #       spec:
+  #         accessModes: ["ReadWriteOnce"]
+  #         resources:
+  #           requests:
+  #             storage: 8Gi
+  #         storageClassName: gp2   # or "gp3" depending on your cluster setup
+
+# Grafana setup
 grafana:
   enabled: true
+  adminUser: admin
+  adminPassword: admin
+
   service:
     type: LoadBalancer
-  adminPassword: admin
+    port: 80
+
+  # persistence:
+  #   enabled: true
+  #   size: 5Gi
+  #   accessModes:
+  #     - ReadWriteOnce
+  #   storageClassName: gp2
+
+  sidecar:
+    dashboards:
+      enabled: true
+    datasources:
+      enabled: true
+
+# Alertmanager setup
+alertmanager:
+  enabled: true
+  service:
+    type: ClusterIP
+  alertmanagerSpec:
+    replicas: 1
+    # storage:
+    #   volumeClaimTemplate:
+    #     spec:
+    #       accessModes: ["ReadWriteOnce"]
+    #       resources:
+    #         requests:
+    #           storage: 2Gi
+    #       storageClassName: gp2
+
+# Enable kube-state-metrics (for node/pod metrics)
+kubeStateMetrics:
+  enabled: true
+
+# Node Exporter (host metrics)
+nodeExporter:
+  enabled: true
+
+# Enable ServiceMonitor CRDs
+prometheusOperator:
+  enabled: true
+  admissionWebhooks:
+    enabled: true
+  tls:
+    enabled: false
+
+# Enable CRD creation (only needed once per cluster)
+crds:
+  enabled: true
