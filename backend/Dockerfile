@@ -11,7 +11,7 @@ RUN npm install
 # Copy the rest of the backend code
 COPY . .
 
-# Expose the port the backend listens on (adjust if not 3000)
+# Expose the port the backend listens on
 EXPOSE 3000
 
 # Command to start the server (adjust if different)
