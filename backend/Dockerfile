@@ -14,7 +14,7 @@ COPY . .
 # Expose the port the backend listens on
 EXPOSE 3000
 
-# Command to start the server (adjust if different)
+# Command to start the server
 CMD ["node", "server.js"]
 
 # Run the following commands to build and run the Docker container:
