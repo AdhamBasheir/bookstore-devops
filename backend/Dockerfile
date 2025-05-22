@@ -1,5 +1,5 @@
 # Use official Node.js base image
-FROM node:22
+FROM node:22-alpine
 
 # Set working directory inside the container
 WORKDIR /app
@@ -19,4 +19,4 @@ CMD ["node", "server.js"]
 
 # Run the following commands to build and run the Docker container:
 # docker build -t library-devops-backend .
-# docker run -d -p 3000:3000 --name library-backend-container library-backend
+# docker run -d -p 3000:3000 --name library-backend-container library-devops-backend
